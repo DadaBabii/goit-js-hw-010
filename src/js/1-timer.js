@@ -5,24 +5,18 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 
 const datetimePicker = document.querySelector('#datetime-picker');
-const btn = document.querySelector('button');
+const startButton = document.querySelector('button');
 const daysEl = document.querySelector('.value[data-days]');
 const hoursEl = document.querySelector('.value[data-hours]');
 const minutesEl = document.querySelector('.value[data-minutes]');
 const secondsEl = document.querySelector('.value[data-seconds]');
-const fieldDiv = document.querySelectorAll('.field');
-console.log(fieldDiv);
 
-for (const field of fieldDiv) {
-  field.style.display = 'flex';
-  field.style.flexDirection = 'column';
-  field.style.alignItems = 'center';
-};
+startButton.addEventListener('click', onBtnClick);
 
-btn.addEventListener('click', onBtnClick);
+let userSelectedDate;
+startButton.disabled = true;
 
-let userSelectedDate = 0;
-btn.disabled = true;
+
 const fp = flatpickr(datetimePicker, {
   enableTime: true,
   dateFormat: "Y-m-d H:i",
@@ -47,12 +41,14 @@ const fp = flatpickr(datetimePicker, {
       });
       
     } else if (userSelectedDate > now)
-    btn.disabled = false; // включить кнопку
+    startButton.disabled = false; // включить кнопку
     return userSelectedDate;
   },
 },);
 
-function onBtnClick() {
+function onBtnClick(e) {
+  datetimePicker.disabled = true;
+  e.target.disabled = true;
  
   const intervalId = setInterval(timerMsec, 1000);
 
@@ -63,13 +59,11 @@ function onBtnClick() {
        clearInterval(intervalId); 
          
     };
-    const dates = convertMs(diff, convertValue);
-    daysEl.textContent = `${convertValue(dates.days)}`;
-    hoursEl.textContent = `${convertValue(dates.hours)}`;
-    minutesEl.textContent = `${convertValue(dates.minutes)}`;
-    secondsEl.textContent = `${convertValue(dates.seconds)}`;
-
-   
+    const timeComponents = convertMs(diff, convertValue);
+    daysEl.textContent = `${convertValue(timeComponents.days)}`;
+    hoursEl.textContent = `${convertValue(timeComponents.hours)}`;
+    minutesEl.textContent = `${convertValue(timeComponents.minutes)}`;
+    secondsEl.textContent = `${convertValue(timeComponents.seconds)}`;
 
   };
   
@@ -77,8 +71,10 @@ function onBtnClick() {
     return value.toString().padStart(2, 0)
   };
   
+ 
+};
   
- function convertMs(ms) {
+function convertMs(ms) {
   // Number of milliseconds per unit of time
   const second = 1000;
   const minute = second * 60;
@@ -96,9 +92,6 @@ function onBtnClick() {
  
   return { days, hours, minutes, seconds };
   };
-  
- 
-};
   
 
 
